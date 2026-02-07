@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Sistema Turni Medici v3.0</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+    
+    <!-- HEADER -->
+    <header class="header">
+        <h1>🏥 Sistema Turni Medici - v3.0</h1>
+        
+        <div class="controls">
+            <select id="meseSelect">
+                <option value="1">Gennaio</option>
+                <option value="2">Febbraio</option>
+                <option value="3">Marzo</option>
+                <option value="4">Aprile</option>
+                <option value="5">Maggio</option>
+                <option value="6">Giugno</option>
+                <option value="7">Luglio</option>
+                <option value="8">Agosto</option>
+                <option value="9">Settembre</option>
+                <option value="10">Ottobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Dicembre</option>
+            </select>
+            
+            <select id="annoSelect">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+            </select>
+            
+            <button class="btn btn-primary" id="btnGeneraAuto">
+                ⚙️ Genera Auto
+            </button>
+            
+            <button class="btn btn-danger" id="btnSvuota">
+                🗑️ Svuota
+            </button>
+            
+            <button class="btn btn-success" id="btnSalva">
+                💾 Salva
+            </button>
+            
+            <button class="btn btn-info" id="btnEsporta">
+                📤 Esporta JSON
+            </button>
+            
+            <button class="btn btn-warning" id="btnImporta">
+                📥 Importa JSON
+            </button>
+            
+            <input type="file" id="fileInput" accept=".json" style="display: none;">
+        </div>
+    </header>
+    
+    <!-- INFO BANNER -->
+    <div class="info-banner">
+        <div class="info-section">
+            <strong>📊 Turni:</strong>
+            <span id="infoTurniAssegnati">0</span>
+        </div>
+        <div class="info-section">
+            <strong>👨‍⚕️ Medici:</strong>
+            <span id="infoMedici">0</span>
+        </div>
+        <div class="info-section">
+            <strong>❌ Violazioni:</strong>
+            <span id="infoViolazioni">0</span>
+        </div>
+        <div class="info-section">
+            <strong>⚠️ Warnings:</strong>
+            <span id="infoWarnings">0</span>
+        </div>
+    </div>
+    
+    <!-- SCROLLBAR CUSTOM -->
+    <div class="scroll-container">
+        <div class="scroll-bar" id="scrollBar">
+            <div class="scroll-thumb" id="scrollThumb"></div>
+        </div>
+    </div>
+    
+    <!-- SIDEBAR MEDICI -->
+    <aside class="sidebar">
+        <h3>👨‍⚕️ Medici</h3>
+        <div class="medici-list">
+            <div class="medico-chip" data-medico="Caruso" style="background: #FFCDD2;">Caruso</div>
+            <div class="medico-chip" data-medico="De Marco" style="background: #F8BBD0;">De Marco</div>
+            <div class="medico-chip" data-medico="Di Bernardo" style="background: #E1BEE7;">Di Bernardo</div>
+            <div class="medico-chip" data-medico="Di Dio" style="background: #D1C4E9;">Di Dio</div>
+            <div class="medico-chip" data-medico="Gabriele" style="background: #C5CAE9;">Gabriele</div>
+            <div class="medico-chip" data-medico="La Giglia" style="background: #BBDEFB;">La Giglia</div>
+            <div class="medico-chip" data-medico="Pecorella" style="background: #B3E5FC;">Pecorella</div>
+            <div class="medico-chip" data-medico="Sardone" style="background: #B2EBF2;">Sardone</div>
+            <div class="medico-chip" data-medico="Scaccia" style="background: #B2DFDB;">Scaccia</div>
+            <div class="medico-chip" data-medico="Scravaglieri" style="background: #C8E6C9;">Scravaglieri</div>
+            <div class="medico-chip na" data-medico="N/A">N/A</div>
+        </div>
+        
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--border-light);">
+            <h3>ℹ️ Legenda</h3>
+            <div style="font-size: 11px; line-height: 1.6;">
+                <div><strong>◆</strong> Obbligo</div>
+                <div><strong>⛔</strong> Veto</div>
+                <div><strong>🏖️</strong> Congedo</div>
+                <div><strong>🏔️</strong> ALPI</div>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="table-wrapper">
+            <div id="tableContainer"></div>
+        </div>
+        
+        <!-- STATISTICHE -->
+        <div class="stats-panel" style="margin-top: 20px;">
+            <h3>📈 Statistiche Rapide</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTurniTotali">0</div>
+                    <div class="stat-label">Turni Totali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statCopertura">0%</div>
+                    <div class="stat-label">Copertura</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statMediaMedico">0</div>
+                    <div class="stat-label">Media per Medico</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- CONTEXT MENU -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" data-action="remove">
+            🗑️ Rimuovi assegnazione
+        </div>
+        <div class="context-menu-item" data-action="na">
+            ➕ Assegna N/A
+        </div>
+        <div class="context-menu-item" data-action="info">
+            ℹ️ Info turno
+        </div>
+    </div>
+    
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast" style="display: none;"></div>
+    
+    <!-- JAVASCRIPT MODULES -->
+    <script src="js/config.js"></script>
+    <script src="js/validators.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/dragdrop.js"></script>
+    <script src="js/app.js"></script>
+    
+</body>
+</html>
